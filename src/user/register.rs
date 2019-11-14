@@ -41,7 +41,7 @@ impl FromDataSimple for User {
     }
 }
 
-// Here I remove the warning for this 'unused' function because it is not unused (Hey rust developers you forgot to check usage in UT functions ;))
+// Here I remove the warning for this 'unused' function because it is not unused
 #[allow(dead_code)]
 fn delete_user(_username: String) {
     let db: std::sync::Arc<mongodb::db::DatabaseInner> = connect_mongodb();
@@ -73,7 +73,7 @@ fn add_user_to_db(_user: User) -> bool {
 
     // Hash user password
     let mut hasher = Sha256::new();
-    hasher.input(_user.password.as_ref());
+    hasher.input(_user.password.as_bytes());
     let result = hasher.result();
 
     let hashed = format!("{:x}", result);
@@ -105,7 +105,7 @@ mod test {
     #[test]
     fn test_register_ok() {
         let client = Client::new(rocket()).expect("valid src instance");
-        let mut response = client.post("/user/register").body(r#"{ "username": "tester", "password": "G00DP4SSW0RD" }"#).dispatch();
+        let response = client.post("/user/register").body(r#"{ "username": "tester", "password": "G00DP4SSW0RD" }"#).dispatch();
         assert_eq!(response.status(), Status::Created);
         super::delete_user("tester".to_string());
     }
@@ -113,7 +113,7 @@ mod test {
     #[test]
     fn test_register_user_exist() {
         let client = Client::new(rocket()).expect("valid src instance");
-        let mut response = client.post("/user/register").body(r#"{ "username": "tester_static", "password": "G00DP4SSW0RD" }"#).dispatch();
+        let response = client.post("/user/register").body(r#"{ "username": "tester_static", "password": "G00DP4SSW0RD" }"#).dispatch();
         assert_eq!(response.status(), Status::Conflict);
     }
 
