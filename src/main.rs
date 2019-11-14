@@ -5,14 +5,13 @@
 #[macro_use] extern crate rocket;
 
 use rocket::Rocket;
-
 /* -------------------- MODULES USAGES -------------------- */
 mod user;
 
 fn rocket() -> Rocket {
     rocket::ignite()
         .mount("/", routes![api_root])
-        .mount("/user", routes![user::login::login])
+        .mount("/user", routes![user::login::login, user::register::register])
 }
 
 fn main() {
