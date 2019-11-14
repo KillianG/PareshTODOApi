@@ -1,8 +1,12 @@
-use rocket::{Request, Data, Outcome::*};
+use std::io::Read;
+
+use rocket::{Data, Outcome::*, Request};
 use rocket::data::{self, FromDataSimple};
 use rocket::http::Status;
-use rocket::response::status;
-use std::io::Read;
+use sha2::{Digest, Sha256};
+
+use crate::mongodb::db::ThreadedDatabase;
+use crate::utils::mongo::connect_mongodb;
 
 pub struct User {
     username: String,
@@ -37,26 +41,80 @@ impl FromDataSimple for User {
     }
 }
 
+// Here I remove the warning for this 'unused' function because it is not unused (Hey rust developers you forgot to check usage in UT functions ;))
+#[allow(dead_code)]
+fn delete_user(_username: String) {
+    let db: std::sync::Arc<mongodb::db::DatabaseInner> = connect_mongodb();
+    let collection = db.collection("users");
+
+    let document = doc! {
+        "username" => _username
+    };
+    collection.find_one_and_delete(document, None).unwrap();
+}
+
+fn check_user_doesnt_exist(_username: String) -> bool {
+    let db: std::sync::Arc<mongodb::db::DatabaseInner> = connect_mongodb();
+    let collection = db.collection("users");
+
+    let document = doc! {
+        "username" => _username
+    };
+    let cursor = collection.find(Some(document), None).unwrap();
+    return cursor.count() == 0;
+}
+
+fn add_user_to_db(_user: User) -> bool {
+    if !check_user_doesnt_exist(_user.username.clone()) {
+        return false;
+    }
+    let db: std::sync::Arc<mongodb::db::DatabaseInner> = connect_mongodb();
+    let collection = db.collection("users");
+
+    // Hash user password
+    let mut hasher = Sha256::new();
+    hasher.input(_user.password.as_ref());
+    let result = hasher.result();
+
+    let hashed = format!("{:x}", result);
+
+    collection.insert_one(doc! {
+        "username": _user.username,
+        "password": hashed
+    }, None).unwrap();
+    true
+}
+
 #[post("/register", data = "<_user>")]
-pub fn register(_user: User) -> status::Created<String> {
-    //add database connection and add user in
-    status::Created(format!("User {} created!", _user.username), Some(format!("User {} created!", _user.username)))
+pub fn register(_user: User) -> Status {
+    if !add_user_to_db(_user) {
+        return Status::Conflict;
+    }
+    return Status::Created;
 }
 
 /* -------------------- UNIT TESTS -------------------- */
 
 #[cfg(test)]
 mod test {
-    use super::super::super::rocket;
-    use rocket::local::Client;
     use rocket::http::Status;
+    use rocket::local::Client;
+
+    use super::super::super::rocket;
 
     #[test]
     fn test_register_ok() {
         let client = Client::new(rocket()).expect("valid src instance");
         let mut response = client.post("/user/register").body(r#"{ "username": "tester", "password": "G00DP4SSW0RD" }"#).dispatch();
         assert_eq!(response.status(), Status::Created);
-        assert_eq!(response.body_string(), Some("User tester created!".into()));
+        super::delete_user("tester".to_string());
+    }
+
+    #[test]
+    fn test_register_user_exist() {
+        let client = Client::new(rocket()).expect("valid src instance");
+        let mut response = client.post("/user/register").body(r#"{ "username": "tester_static", "password": "G00DP4SSW0RD" }"#).dispatch();
+        assert_eq!(response.status(), Status::Conflict);
     }
 
     #[test]

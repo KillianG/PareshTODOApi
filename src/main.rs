@@ -1,12 +1,18 @@
 #![feature(proc_macro_hygiene, decl_macro)]
 #![feature(plugin)]
 #![feature(concat_idents)]
+#![feature(in_band_lifetimes)]
 
-#[macro_use] extern crate rocket;
+#[macro_use]
+extern crate mongodb;
+#[macro_use]
+extern crate rocket;
 
 use rocket::Rocket;
+
 /* -------------------- MODULES USAGES -------------------- */
 mod user;
+mod utils;
 
 fn rocket() -> Rocket {
     rocket::ignite()
@@ -27,9 +33,10 @@ fn api_root() -> &'static str {
 
 #[cfg(test)]
 mod test {
-    use super::rocket;
-    use rocket::local::Client;
     use rocket::http::Status;
+    use rocket::local::Client;
+
+    use super::rocket;
 
     #[test]
     fn test_root() {
