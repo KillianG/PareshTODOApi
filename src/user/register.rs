@@ -62,28 +62,28 @@ mod test {
     #[test]
     fn test_register_no_username() {
         let client = Client::new(rocket()).expect("valid src instance");
-        let mut response = client.post("/user/register").body(r#"{ "password": "G00DP4SSW0RD" }"#).dispatch();
+        let response = client.post("/user/register").body(r#"{ "password": "G00DP4SSW0RD" }"#).dispatch();
         assert_eq!(response.status(), Status::UnprocessableEntity);
     }
 
     #[test]
     fn test_register_no_password() {
         let client = Client::new(rocket()).expect("valid src instance");
-        let mut response = client.post("/user/register").body(r#"{ "username": "tester"}"#).dispatch();
+        let response = client.post("/user/register").body(r#"{ "username": "tester"}"#).dispatch();
         assert_eq!(response.status(), Status::UnprocessableEntity);
     }
 
     #[test]
     fn test_register_no_args() {
         let client = Client::new(rocket()).expect("valid src instance");
-        let mut response = client.post("/user/register").dispatch();
+        let response = client.post("/user/register").dispatch();
         assert_eq!(response.status(), Status::UnprocessableEntity);
     }
 
     #[test]
     fn test_register_invalid_json() {
         let client = Client::new(rocket()).expect("valid src instance");
-        let mut response = client.post("/user/register").body(r#" "userna "teste "password": "G00DP}"#).dispatch();
+        let response = client.post("/user/register").body(r#" "userna "teste "password": "G00DP}"#).dispatch();
         assert_eq!(response.status(), Status::UnprocessableEntity);
     }
 }
