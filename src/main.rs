@@ -5,6 +5,7 @@
 
 #[macro_use]
 extern crate mongodb;
+extern crate rand;
 #[macro_use]
 extern crate rocket;
 #[macro_use]

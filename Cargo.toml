@@ -16,5 +16,5 @@ chrono = "*"
 serde = "*"
 serde_derive = "*"
 serde_json = "*"
-rand = "*"
+rand = "0.7.2"
 

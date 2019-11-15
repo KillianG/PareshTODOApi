@@ -2,7 +2,8 @@ extern crate chrono;
 
 use chrono::Utc;
 use jsonwebtoken::{decode, encode, Header, Validation};
-use rand::Rng;
+use rand::{Rng, thread_rng};
+use rand::distributions::Alphanumeric;
 use rocket::http::Status;
 
 use crate::mongodb::db::ThreadedDatabase;
@@ -34,13 +35,18 @@ pub fn decode_token(_token: String) -> Result<User, Status> {
 pub fn change_user_refresh_token(_refresh_token: String) -> String {
     let db: std::sync::Arc<mongodb::db::DatabaseInner> = connect_mongodb();
     let collection = db.collection("users");
-    let mut rng = rand::thread_rng();
+    let _rng = thread_rng();
+
 
     let document = doc! {
         "refresh_token" => _refresh_token
     };
 
-    let token_refreshed = rng.gen_ascii_chars().take(30).collect::<String>();
+    let token_refreshed: String = thread_rng()
+        .sample_iter(&Alphanumeric)
+        .take(30)
+        .collect();
+
     let updt = doc! {
         "$set": {
             "refresh_token": token_refreshed.clone()
@@ -53,13 +59,16 @@ pub fn change_user_refresh_token(_refresh_token: String) -> String {
 pub fn generate_first_refresh_token(_username: String) -> String {
     let db: std::sync::Arc<mongodb::db::DatabaseInner> = connect_mongodb();
     let collection = db.collection("users");
-    let mut rng = rand::thread_rng();
+    let _rng = rand::thread_rng();
 
     let document = doc! {
         "username" => _username
     };
 
-    let token_refreshed = rng.gen_ascii_chars().take(30).collect::<String>();
+    let token_refreshed: String = thread_rng()
+        .sample_iter(&Alphanumeric)
+        .take(30)
+        .collect();
     let updt = doc! {
         "$set": {
             "refresh_token": token_refreshed.clone()
