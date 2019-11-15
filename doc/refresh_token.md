@@ -32,13 +32,8 @@ Used to collect a Token for a registered User.
 
 ```json
 {
-    "token": "azidohdzaodh2oaiea2312oI3aze",
+    "access_token": "azidohdzaodh2oaiea2312oI3aze",
     "refresh_token": "OIDodiazjdpoIJDOIJDz"
 }
 ```
 
-## Error Response
-
-**Condition** : If 'username' and 'password' combination is wrong.
-
-**Code** : `BAD REQUEST`

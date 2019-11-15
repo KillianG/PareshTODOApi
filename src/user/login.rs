@@ -63,9 +63,9 @@ impl FromDataSimple for Token {
 pub fn refresh_token(_token: Token) -> content::Json<String> {
     let (refresh_token, access_token) = change_user_refresh_token(_token.token);
     return content::Json(format!("{}\
-        'refresh_token': {},\
-        'access_token': {}
-    {}", "{", refresh_token, access_token, "}"))
+        'access_token': {},\
+        'refresh_token': {}
+    {}", "{", access_token, refresh_token, "}"))
 }
 
 /* -------------------- UNIT TESTS -------------------- */
