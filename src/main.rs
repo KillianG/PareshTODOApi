@@ -7,6 +7,8 @@
 extern crate mongodb;
 #[macro_use]
 extern crate rocket;
+#[macro_use]
+extern crate serde_derive;
 
 use rocket::Rocket;
 
@@ -17,7 +19,7 @@ mod utils;
 fn rocket() -> Rocket {
     rocket::ignite()
         .mount("/", routes![api_root])
-        .mount("/user", routes![user::login::login, user::register::register])
+        .mount("/user", routes![user::login::login, user::register::register, user::login::refresh_token])
 }
 
 fn main() {

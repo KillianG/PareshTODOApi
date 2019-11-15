@@ -1,45 +1,7 @@
-use std::io::Read;
-
-use rocket::{Data, Outcome::*, Request};
-use rocket::data::{self, FromDataSimple};
 use rocket::http::Status;
-use sha2::{Digest, Sha256};
 
 use crate::mongodb::db::ThreadedDatabase;
 use crate::utils::mongo::connect_mongodb;
-
-pub struct User {
-    username: String,
-    password: String
-}
-
-//Trait created for structure User
-impl FromDataSimple for User {
-    type Error = String;
-
-    fn from_data(_: &Request, data: Data) -> data::Outcome<User, String> {
-        let mut string = String::new();
-
-        //Read data
-        if let Err(e) = data.open().take(256).read_to_string(&mut string) {
-            return Failure((Status::InternalServerError, format!("{:?}", e)));
-        }
-
-        //Parse data into json
-        let json_res = match json::parse(&string) {
-            Ok(t) => t,
-            Err(_e) => return Failure((Status::UnprocessableEntity, ":".into()))
-        };
-
-        //Check for all fields in json
-        let (username, password) = (json_res["username"].to_string(), json_res["password"].to_string());
-        if username == "null" || password == "null" {
-            return Failure((Status::UnprocessableEntity, ":".into()))
-        }
-        //return Success with user
-        Success(User{ username, password })
-    }
-}
 
 // Here I remove the warning for this 'unused' function because it is not unused
 #[allow(dead_code)]
@@ -53,40 +15,26 @@ fn delete_user(_username: String) {
     collection.find_one_and_delete(document, None).unwrap();
 }
 
-fn check_user_doesnt_exist(_username: String) -> bool {
-    let db: std::sync::Arc<mongodb::db::DatabaseInner> = connect_mongodb();
-    let collection = db.collection("users");
-
-    let document = doc! {
-        "username" => _username
-    };
-    let cursor = collection.find(Some(document), None).unwrap();
-    return cursor.count() == 0;
-}
-
-fn add_user_to_db(_user: User) -> bool {
-    if !check_user_doesnt_exist(_user.username.clone()) {
+fn add_user_to_db(_user: super::User) -> bool {
+    if super::user_exist(_user.username.clone()) {
         return false;
     }
     let db: std::sync::Arc<mongodb::db::DatabaseInner> = connect_mongodb();
     let collection = db.collection("users");
 
-    // Hash user password
-    let mut hasher = Sha256::new();
-    hasher.input(_user.password.as_bytes());
-    let result = hasher.result();
-
-    let hashed = format!("{:x}", result);
+    let hashed = super::hash_password(_user.password);
 
     collection.insert_one(doc! {
         "username": _user.username,
-        "password": hashed
+        "password": hashed,
+        "refresh_token": ""
+
     }, None).unwrap();
     true
 }
 
 #[post("/register", data = "<_user>")]
-pub fn register(_user: User) -> Status {
+pub fn register(_user: super::User) -> Status {
     if !add_user_to_db(_user) {
         return Status::Conflict;
     }

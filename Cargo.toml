@@ -11,4 +11,10 @@ rocket = "0.4.2"
 json = "*"
 mongodb = { version = "0.3.11", features = ["ssl"] }
 sha2 = "*"
+jsonwebtoken = "*"
+chrono = "*"
+serde = "*"
+serde_derive = "*"
+serde_json = "*"
+rand = "*"
 
