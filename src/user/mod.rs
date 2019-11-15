@@ -57,6 +57,21 @@ fn user_exist(_username: String) -> bool {
     return cursor.count() != 0;
 }
 
+fn get_username_with_token(_token: String) -> String {
+    let db: std::sync::Arc<mongodb::db::DatabaseInner> = connect_mongodb();
+    let collection = db.collection("users");
+
+    let document = doc! {
+        "refresh_token" => _token
+    };
+    let cursor = collection.find(Some(document), None).unwrap();
+    for result in cursor {
+        let doc = result.expect("Received network error during cursor operations.");
+        return doc.get("username").unwrap().to_string().replace("\"", "");
+    };
+    "Error".to_string()
+}
+
 fn get_user(_username: String) -> User {
     let db: std::sync::Arc<mongodb::db::DatabaseInner> = connect_mongodb();
     let collection = db.collection("users");

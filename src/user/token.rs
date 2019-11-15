@@ -7,7 +7,7 @@ use rand::distributions::Alphanumeric;
 use rocket::http::Status;
 
 use crate::mongodb::db::ThreadedDatabase;
-use crate::user::{get_user, User};
+use crate::user::{get_user, get_username_with_token, User};
 use crate::utils::mongo::connect_mongodb;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
@@ -32,14 +32,14 @@ pub fn decode_token(_token: String) -> Result<User, Status> {
     };
 }
 
-pub fn change_user_refresh_token(_refresh_token: String) -> String {
+pub fn change_user_refresh_token(_refresh_token: String) -> (String, String) {
     let db: std::sync::Arc<mongodb::db::DatabaseInner> = connect_mongodb();
     let collection = db.collection("users");
     let _rng = thread_rng();
 
 
     let document = doc! {
-        "refresh_token" => _refresh_token
+        "refresh_token" => _refresh_token.clone()
     };
 
     let token_refreshed: String = thread_rng()
@@ -53,7 +53,10 @@ pub fn change_user_refresh_token(_refresh_token: String) -> String {
         }
     };
     collection.update_one(document, updt, None).unwrap();
-    token_refreshed
+
+    let username = get_username_with_token(_refresh_token);
+    let access_token = create_token(username);
+    (token_refreshed, access_token)
 }
 
 pub fn generate_first_refresh_token(_username: String) -> String {

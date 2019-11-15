@@ -2,7 +2,7 @@
 
 Used to collect a Token for a registered User.
 
-**URL** : `/user/login/`
+**URL** : `/user/refresh_token`
 
 **Method** : `POST`
 
@@ -12,8 +12,7 @@ Used to collect a Token for a registered User.
 
 ```json
 {
-    "username": "[valid email address]",
-    "password": "[password in plain text]"
+    "refresh_token": "[valid refresh token]"
 }
 ```
 
@@ -21,8 +20,7 @@ Used to collect a Token for a registered User.
 
 ```json
 {
-    "username": "iloveauth@example.com",
-    "password": "abcd1234"
+    "refresh_token": "ZPOzpoadZPDoZdpqaozdZDP"
 }
 ```
 
@@ -34,7 +32,7 @@ Used to collect a Token for a registered User.
 
 ```json
 {
-    "token": "93144b288eb1fdccbe46d6fc0f241a51766ecd3d",
+    "token": "azidohdzaodh2oaiea2312oI3aze",
     "refresh_token": "OIDodiazjdpoIJDOIJDz"
 }
 ```
