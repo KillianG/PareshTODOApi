@@ -20,6 +20,7 @@ pub fn login(_user: super::User) -> Result<content::Json<String>, Status> {
     if user_db.password != hashed_password {
         return Err(Status::BadRequest);
     }
+
     let token = token::create_token(_user.username.clone());
     let refresh_token = token::generate_first_refresh_token(_user.username);
     return Ok(content::Json(format!("{}\

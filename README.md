@@ -6,6 +6,7 @@ Open endpoints require no Authentication.
 
 * [Login](doc/login.md) : `POST /user/login`
 * [Register](doc/register.md) : `POST /user/register`
+* [Refresh Token](doc/register.md) : `POST /user/refresh_token`
 
 
 ## Endpoints that require Authentication
