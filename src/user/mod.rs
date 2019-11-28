@@ -16,8 +16,8 @@ pub mod register;
 pub mod token;
 
 pub struct User {
-    username: String,
-    password: String,
+    pub username: String,
+    pub password: String,
 }
 
 impl<'a, 'r> FromRequest<'a, 'r> for User {
