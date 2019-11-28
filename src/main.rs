@@ -25,7 +25,7 @@ mod teams;
 
 fn make_cors() -> Cors {
     let allowed_origins = AllowedOrigins::some_exact(&[ // 4.
-        "http://localhost:8080",
+        "http://*",
         "http://127.0.0.1:8080",
         "http://localhost:8000",
         "http://0.0.0.0:8000",
