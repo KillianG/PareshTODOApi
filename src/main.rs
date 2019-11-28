@@ -21,17 +21,8 @@ mod utils;
 mod teams;
 
 fn make_cors() -> Cors {
-
-
-    CorsOptions { // 5.
-        allowed_origins: AllowedOrigins::default(),
-        allowed_methods: AllowedMethods::default(), // 1.
-        allowed_headers: AllowedHeaders::default(),
-        allow_credentials: true,
-        ..Default::default()
-    }
-        .to_cors()
-        .expect("error while building CORS")
+    let default = rocket_cors::CorsOptions::default();
+    default.to_cors().unwrap()
 }
 
 fn rocket() -> Rocket {
