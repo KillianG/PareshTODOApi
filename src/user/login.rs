@@ -29,6 +29,11 @@ pub fn login(_user: super::User) -> Result<content::Json<String>, Status> {
     {}", "{", token, refresh_token, "}")))
 }
 
+#[post("/is_logged")]
+pub fn is_logged(_user: super::User) -> Status {
+    Status::Ok
+}
+
 pub struct Token {
     token: String
 }

@@ -1,12 +1,14 @@
 use std::io::Read;
 
-use rocket::{Data, Request};
+use rocket::{Data, Outcome, Request};
 use rocket::data::{self, FromDataSimple};
 use rocket::http::Status;
 use rocket::outcome::Outcome::{Failure, Success};
+use rocket::request::FromRequest;
 use sha2::{Digest, Sha256};
 
 use crate::mongodb::db::ThreadedDatabase;
+use crate::user::token::decode_token;
 use crate::utils::mongo::connect_mongodb;
 
 pub mod login;
@@ -16,6 +18,21 @@ pub mod token;
 pub struct User {
     username: String,
     password: String,
+}
+
+impl<'a, 'r> FromRequest<'a, 'r> for User {
+    type Error = String;
+
+    fn from_request(request: &'a Request<'r>) -> Outcome<Self, (Status, Self::Error), ()> {
+        if !request.headers().contains("Authorization") {
+            return Failure((Status::BadRequest, "Missing Authorization in header".to_string()));
+        }
+        let user = match decode_token(request.headers().get_one("Authorization").unwrap().parse().unwrap()) {
+            Ok(T) => T,
+            Err(e) => return Failure((Status::Forbidden, "User not found".to_string()))
+        };
+        Success(user)
+    }
 }
 
 //Trait created for structure User
