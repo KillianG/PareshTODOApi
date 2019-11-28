@@ -13,10 +13,7 @@ extern crate serde_derive;
 
 use rocket::http::Method;
 use rocket::Rocket;
-use rocket_cors::{
-    AllowedHeaders, AllowedOrigins, Cors, // 2.
-    CorsOptions, Error, // 3.
-};
+use rocket_cors::{AllowedHeaders, AllowedMethods, AllowedOrigins, Cors, CorsOptions, Error};
 
 /* -------------------- MODULES USAGES -------------------- */
 mod user;
@@ -24,21 +21,12 @@ mod utils;
 mod teams;
 
 fn make_cors() -> Cors {
-    let allowed_origins = AllowedOrigins::some_exact(&[ // 4.
-        "http://*",
-        "http://127.0.0.1:8080",
-        "http://localhost:8000",
-        "http://0.0.0.0:8000",
-    ]);
+
 
     CorsOptions { // 5.
-        allowed_origins,
-        allowed_methods: vec![Method::Get].into_iter().map(From::from).collect(), // 1.
-        allowed_headers: AllowedHeaders::some(&[
-            "Authorization",
-            "Accept",
-            "Access-Control-Allow-Origin"// 6.
-        ]),
+        allowed_origins: AllowedOrigins::default(),
+        allowed_methods: AllowedMethods::default(), // 1.
+        allowed_headers: AllowedHeaders::default(),
         allow_credentials: true,
         ..Default::default()
     }

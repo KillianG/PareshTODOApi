@@ -17,5 +17,5 @@ serde = "*"
 serde_derive = "*"
 serde_json = "*"
 rand = "0.7.2"
-rocket_cors = "0.5.1"
+rocket_cors = "*"
 
