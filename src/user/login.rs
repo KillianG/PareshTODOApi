@@ -24,8 +24,8 @@ pub fn login(_user: super::User) -> Result<content::Json<String>, Status> {
     let token = token::create_token(_user.username.clone());
     let refresh_token = token::generate_first_refresh_token(_user.username);
     return Ok(content::Json(format!("{}\
-        'access_token': {},\
-        'refresh_token': {}\
+        \"access_token\": \"{}\",\
+        \"refresh_token\": \"{}\"\
     {}", "{", token, refresh_token, "}")))
 }
 
@@ -69,8 +69,8 @@ impl FromDataSimple for Token {
 pub fn refresh_token(_token: Token) -> content::Json<String> {
     let (refresh_token, access_token) = change_user_refresh_token(_token.token);
     return content::Json(format!("{}\
-        'access_token': {},\
-        'refresh_token': {}
+        \"access_token\": \"{}\",\
+        \"refresh_token\": \"{}\"
     {}", "{", access_token, refresh_token, "}"))
 }
 
