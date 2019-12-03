@@ -27,7 +27,8 @@ fn add_user_to_db(_user: super::User) -> bool {
     collection.insert_one(doc! {
         "username": _user.username,
         "password": hashed,
-        "refresh_token": ""
+        "refresh_token": "",
+        "teams": []
 
     }, None).unwrap();
     true

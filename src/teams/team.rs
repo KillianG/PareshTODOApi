@@ -17,17 +17,60 @@ pub struct Team {
     pub members: Vec<String>,
 }
 
-pub fn find_team(_user: super::super::user::User) {
+pub fn add_user_to_team(_username: String, _team_id: String) -> () {
     let db: std::sync::Arc<mongodb::db::DatabaseInner> = connect_mongodb();
     let collection = db.collection("teams");
 
-    let mut cursor = collection.find(None, None).unwrap();
-    for result in cursor {
-        if let Ok(item) = result {
-            let a: serde_json::value::Value = item.get("members").unwrap().clone().into();
-            println!("{}", a);
+    let document = doc! {
+            "_id" => mongodb::oid::ObjectId::with_string(_team_id.as_ref()).unwrap(),
+    };
+    let upd = doc! {
+        "$push": {
+            "members": _username.clone()
         }
-    }
+    };
+    collection.update_one(document, upd, None);
+}
+
+pub fn add_team_to_db(_team: &super::team::Team, _admin: &super::super::user::User) -> String {
+    let db: std::sync::Arc<mongodb::db::DatabaseInner> = connect_mongodb();
+    let collection = db.collection("teams");
+
+    let res_id: mongodb::oid::ObjectId = collection.insert_one(doc! {
+        "name": _team.name.clone(),
+        "logo": _team.logo.clone(),
+        "administrator": _admin.username.clone(),
+        "members": [
+            _admin.username.clone()
+        ]
+    }, None).unwrap().inserted_id.unwrap().as_object_id().unwrap().clone();
+    res_id.to_hex()
+}
+
+pub fn add_team_to_user(_team_id: String, _username: String) -> () {
+    let db: std::sync::Arc<mongodb::db::DatabaseInner> = connect_mongodb();
+    let collection = db.collection("users");
+
+    let document = doc! {
+        "username" => _username.clone()
+    };
+    let upd = doc! {
+        "$push": {
+            "teams": _team_id.clone()
+        }
+    };
+    collection.update_one(document, upd, None);
+}
+
+pub fn is_admin(_username: String, _team_id: String) -> bool {
+    let db: std::sync::Arc<mongodb::db::DatabaseInner> = connect_mongodb();
+    let collection = db.collection("teams");
+
+    let document = doc! {
+            "_id" => mongodb::oid::ObjectId::with_string(_team_id.as_ref()).unwrap(),
+    };
+    let cursor = collection.find_one(Some(document), None).unwrap().unwrap();
+    return cursor.get("administrator").unwrap().as_str().unwrap() == _username
 }
 
 impl FromDataSimple for Team {

@@ -2,6 +2,7 @@
 #![feature(plugin)]
 #![feature(concat_idents)]
 #![feature(in_band_lifetimes)]
+#![feature(option_result_contains)]
 
 #[macro_use]
 extern crate mongodb;
@@ -10,6 +11,7 @@ extern crate rand;
 extern crate rocket;
 #[macro_use]
 extern crate serde_derive;
+
 
 use rocket::http::Method;
 use rocket::Rocket;
@@ -29,7 +31,7 @@ fn rocket() -> Rocket {
     rocket::ignite()
         .mount("/", routes![api_root])
         .mount("/user", routes![user::login::login, user::register::register, user::login::refresh_token, user::login::is_logged])
-        .mount("/team", routes![teams::create::create])
+        .mount("/team", routes![teams::create::create, teams::join::join])
         .attach(make_cors())
 }
 
