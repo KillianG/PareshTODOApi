@@ -51,12 +51,12 @@ pub fn exist(_username: String, _user: super::User) -> &'static str {
     let collection = db.collection("users");
 
     let document = doc! {
-            "username" => _user.username,
+            "username" => _username,
     };
-    let cursor = collection.find_one(Some(document), None);
+    let cursor = collection.find_one(Some(document), None).unwrap();
     match cursor {
-        Ok(T) => return "True",
-        Err(E) => return "False"
+        Some(T) => return "True",
+        None => return "False"
     }
 }
 

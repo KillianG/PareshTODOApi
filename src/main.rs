@@ -32,7 +32,7 @@ fn rocket() -> Rocket {
         .mount("/", routes![api_root])
         .mount("/user", routes![user::login::login, user::register::register, user::login::refresh_token, user::login::is_logged,
         user::location::set_location, user::location::location, user::register::exist])
-        .mount("/team", routes![teams::create::create, teams::invite::invite, teams::my::my])
+        .mount("/team", routes![teams::create::create, teams::invite::invite, teams::my::my, teams::my::members])
         .attach(make_cors())
 }
 

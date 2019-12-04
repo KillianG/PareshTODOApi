@@ -8,6 +8,7 @@ use rocket::outcome::Outcome::{Failure, Success};
 use rocket::request::FromRequest;
 
 use crate::mongodb::db::ThreadedDatabase;
+use crate::user::{get_user_extended, User, UserExtended};
 use crate::utils::mongo::connect_mongodb;
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -85,6 +86,41 @@ pub fn is_admin(_username: String, _team_id: String) -> bool {
     return cursor.get("administrator").unwrap().as_str().unwrap() == _username
 }
 
+pub fn is_member(_username: String, _team_id: String) -> bool {
+    let db: std::sync::Arc<mongodb::db::DatabaseInner> = connect_mongodb();
+    let collection = db.collection("teams");
+
+    let document = doc! {
+            "_id" => mongodb::oid::ObjectId::with_string(_team_id.as_ref()).unwrap(),
+    };
+    let cursor = collection.find_one(Some(document), None).unwrap().unwrap();
+    let members = cursor.get("members").unwrap().as_array().unwrap();
+    for member in members {
+        if member.as_str().unwrap() == _username {
+            return true;
+        }
+    };
+    return false;
+}
+
+pub fn get_members(_team_id: String) -> Vec<UserExtended> {
+    let db: std::sync::Arc<mongodb::db::DatabaseInner> = connect_mongodb();
+    let collection = db.collection("teams");
+
+    let document = doc! {
+            "_id" => mongodb::oid::ObjectId::with_string(_team_id.as_ref()).unwrap(),
+    };
+    let cursor = collection.find_one(Some(document), None).unwrap().unwrap();
+    let members = cursor.get("members").unwrap().as_array().unwrap();
+
+    let mut res: Vec<UserExtended> = Vec::new();
+    for member in members {
+        let extended = get_user_extended(member.as_str().unwrap().to_string());
+        res.push(extended)
+    };
+    return res;
+}
+
 pub fn find_user_teams(_username: String) -> std::vec::Vec<mongodb::Bson> {
     let db: std::sync::Arc<mongodb::db::DatabaseInner> = connect_mongodb();
     let collection = db.collection("users");
@@ -105,7 +141,6 @@ pub fn find_team_id(_username: String, _team_name: String) -> String {
 
     for team in user_teams {
         let team_id = team.as_str().unwrap();
-        println!("{}", team_id);
 
         let document = doc! {
             "_id" => mongodb::oid::ObjectId::with_string(team_id).unwrap(),

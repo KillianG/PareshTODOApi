@@ -21,6 +21,13 @@ pub struct User {
     pub password: String,
 }
 
+#[derive(Serialize, Deserialize, Debug)]
+pub struct UserExtended {
+    pub username: String,
+    pub location: String,
+    pub picture: String,
+}
+
 impl<'a, 'r> FromRequest<'a, 'r> for User {
     type Error = String;
 
@@ -106,6 +113,25 @@ fn get_user(_username: String) -> User {
         };
     };
     return User { username: "ERROR".to_string(), password: "ERROR".to_string() }
+}
+
+pub fn get_user_extended(_username: String) -> UserExtended {
+    let db: std::sync::Arc<mongodb::db::DatabaseInner> = connect_mongodb();
+    let collection = db.collection("users");
+
+    let document = doc! {
+        "username" => _username
+    };
+    let cursor = collection.find(Some(document), None).unwrap();
+    for result in cursor {
+        let doc = result.expect("Received network error during cursor operations.");
+        return UserExtended {
+            username: doc.get("username").unwrap().to_string().replace("\"", ""),
+            location: doc.get("location").unwrap().to_string().replace("\"", ""),
+            picture: doc.get("picture").unwrap().to_string().replace("\"", ""),
+        };
+    };
+    return UserExtended { username: "".to_string(), location: "".to_string(), picture: "".to_string() }
 }
 
 fn hash_password(_password: String) -> String {
