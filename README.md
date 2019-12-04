@@ -6,13 +6,23 @@ Open endpoints require no Authentication.
 
 * [Login](doc/login.md) : `POST /user/login`
 * [Register](doc/register.md) : `POST /user/register`
-* [Refresh Token](doc/register.md) : `POST /user/refresh_token`
-
-
+* [Refresh Token](doc/refresh_token.md) : `POST /user/refresh_token`
+* [Create team](doc/create_team.md) : `POST /team/create`
+* [Join team](doc/invite_team.md) : `POST /team/invite`
+* [My teams](doc/my_teams.md) : `GET /team/my`
+---
 ## Endpoints that require Authentication
 
 Closed endpoints require a valid Token to be included in the header of the
 request. A Token can be acquired from the Login view above.
+
+```json
+{
+    "header": {
+        "Authorization": "[valid token]"
+        }
+}
+```
 
 ### Current User related
 

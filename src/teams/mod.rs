@@ -1,4 +1,4 @@
 pub mod create;
-pub mod join;
+pub mod invite;
 pub mod team;
 pub mod my;
