@@ -27,5 +27,5 @@ request. A Token can be acquired from the Login view above.
 * [My teams](doc/my_teams.md) : `GET /team/my`
 * [Set location](doc/set_location.md) : `POST /user/location/<country_code>`
 * [Get location](doc/get_location.md) : `GET /user/location`
-* [Exist](doc/my_teams.md) : `GET /user/exist`
+* [Exist](doc/exist.md) : `GET /user/exist`
 
