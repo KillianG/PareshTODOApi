@@ -1,4 +1,5 @@
 use rocket::http::Status;
+use rocket::response::content;
 
 use crate::mongodb::db::ThreadedDatabase;
 use crate::utils::mongo::connect_mongodb;
@@ -29,6 +30,7 @@ fn add_user_to_db(_user: super::User) -> bool {
         "password": hashed,
         "refresh_token": "",
         "location": "FI",
+        "picture": "",
         "teams": []
 
     }, None).unwrap();
@@ -41,6 +43,21 @@ pub fn register(_user: super::User) -> Status {
         return Status::Conflict;
     }
     return Status::Created;
+}
+
+#[get("/exist/<_username>")]
+pub fn exist(_username: String, _user: super::User) -> &'static str {
+    let db: std::sync::Arc<mongodb::db::DatabaseInner> = connect_mongodb();
+    let collection = db.collection("users");
+
+    let document = doc! {
+            "username" => _user.username,
+    };
+    let cursor = collection.find_one(Some(document), None);
+    match cursor {
+        Ok(T) => return "True",
+        Err(E) => return "False"
+    }
 }
 
 /* -------------------- UNIT TESTS -------------------- */

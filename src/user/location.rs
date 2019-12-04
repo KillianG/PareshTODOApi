@@ -5,7 +5,7 @@ use crate::mongodb::db::ThreadedDatabase;
 use crate::user::User;
 use crate::utils::mongo::connect_mongodb;
 
-#[post("/set_location/<_country_code>")]
+#[post("/location/<_country_code>")]
 pub fn set_location(_country_code: String, _user: User) -> Status {
     let db: std::sync::Arc<mongodb::db::DatabaseInner> = connect_mongodb();
     let collection = db.collection("users");
