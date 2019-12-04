@@ -1,4 +1,4 @@
-# Join team
+# My teams
 
 Used to list user's teams
 
