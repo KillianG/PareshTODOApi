@@ -10,11 +10,10 @@ use rocket::request::FromRequest;
 use crate::mongodb::db::ThreadedDatabase;
 use crate::utils::mongo::connect_mongodb;
 
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Team {
     pub name: String,
     pub logo: String,
-    pub admin: String,
-    pub members: Vec<String>,
 }
 
 pub fn add_user_to_team(_username: String, _team_id: String) -> () {
@@ -62,6 +61,19 @@ pub fn add_team_to_user(_team_id: String, _username: String) -> () {
     collection.update_one(document, upd, None);
 }
 
+pub fn get_team_by_id(_id: String) -> Team {
+    let db: std::sync::Arc<mongodb::db::DatabaseInner> = connect_mongodb();
+    let collection = db.collection("teams");
+
+    let document = doc! {
+            "_id" => mongodb::oid::ObjectId::with_string(_id.as_ref()).unwrap(),
+    };
+    let cursor = collection.find_one(Some(document), None).unwrap().unwrap();
+    let name = cursor.get("name").unwrap().as_str().unwrap();
+    let logo = cursor.get("logo").unwrap().as_str().unwrap();
+    return Team { name: name.to_string(), logo: logo.to_string() };
+}
+
 pub fn is_admin(_username: String, _team_id: String) -> bool {
     let db: std::sync::Arc<mongodb::db::DatabaseInner> = connect_mongodb();
     let collection = db.collection("teams");
@@ -71,6 +83,42 @@ pub fn is_admin(_username: String, _team_id: String) -> bool {
     };
     let cursor = collection.find_one(Some(document), None).unwrap().unwrap();
     return cursor.get("administrator").unwrap().as_str().unwrap() == _username
+}
+
+pub fn find_user_teams(_username: String) -> std::vec::Vec<mongodb::Bson> {
+    let db: std::sync::Arc<mongodb::db::DatabaseInner> = connect_mongodb();
+    let collection = db.collection("users");
+
+    let document = doc! {
+        "username" => _username.clone()
+    };
+
+    let cursor = collection.find_one(Some(document), None).unwrap().unwrap();
+    cursor.get("teams").unwrap().as_array().unwrap().clone()
+}
+
+pub fn find_team_id(_username: String, _team_name: String) -> String {
+    let db: std::sync::Arc<mongodb::db::DatabaseInner> = connect_mongodb();
+    let collection = db.collection("teams");
+
+    let user_teams = find_user_teams(_username.clone());
+
+    for team in user_teams {
+        let team_id = team.as_str().unwrap();
+        println!("{}", team_id);
+
+        let document = doc! {
+            "_id" => mongodb::oid::ObjectId::with_string(team_id).unwrap(),
+            "name" => _team_name.clone()
+        };
+
+        let cursor = collection.find_one(Some(document), None).unwrap();
+        match cursor {
+            Some(_t) => return team_id.parse().unwrap(),
+            None => continue
+        }
+    }
+    return "Error".to_string();
 }
 
 impl FromDataSimple for Team {
@@ -97,9 +145,7 @@ impl FromDataSimple for Team {
 
         Success(Team {
             name,
-            logo,
-            admin: "NOBODY".to_string(),
-            members: vec![],
+            logo
         })
     }
 }

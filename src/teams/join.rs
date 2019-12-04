@@ -8,7 +8,7 @@ use rocket::http::Status;
 use rocket::outcome::Outcome::{Failure, Success};
 
 use crate::mongodb::db::ThreadedDatabase;
-use crate::teams::team::is_admin;
+use crate::teams::team::{find_team_id, is_admin};
 use crate::user::User;
 use crate::utils::mongo::connect_mongodb;
 
@@ -46,42 +46,6 @@ impl FromDataSimple for JoinPayload {
             invited_username,
         })
     }
-}
-
-fn find_user_teams(_username: String) -> std::vec::Vec<mongodb::Bson> {
-    let db: std::sync::Arc<mongodb::db::DatabaseInner> = connect_mongodb();
-    let collection = db.collection("users");
-
-    let document = doc! {
-        "username" => _username.clone()
-    };
-
-    let cursor = collection.find_one(Some(document), None).unwrap().unwrap();
-    cursor.get("teams").unwrap().as_array().unwrap().clone()
-}
-
-fn find_team_id(_username: String, _team_name: String) -> String {
-    let db: std::sync::Arc<mongodb::db::DatabaseInner> = connect_mongodb();
-    let collection = db.collection("teams");
-
-    let user_teams = find_user_teams(_username.clone());
-
-    for team in user_teams {
-        let team_id = team.as_str().unwrap();
-        println!("{}", team_id);
-
-        let document = doc! {
-            "_id" => mongodb::oid::ObjectId::with_string(team_id).unwrap(),
-            "name" => _team_name.clone()
-        };
-
-        let cursor = collection.find_one(Some(document), None).unwrap();
-        match cursor {
-            Some(_t) => return team_id.parse().unwrap(),
-            None => continue
-        }
-    }
-    return "Error".to_string();
 }
 
 #[post("/join", data = "<_join_payload>")]
