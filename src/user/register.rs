@@ -28,6 +28,7 @@ fn add_user_to_db(_user: super::User) -> bool {
         "username": _user.username,
         "password": hashed,
         "refresh_token": "",
+        "location": "FI",
         "teams": []
 
     }, None).unwrap();

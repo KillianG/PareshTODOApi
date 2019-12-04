@@ -57,6 +57,5 @@ pub fn invite(_join_payload: JoinPayload, _user: super::super::user::User) -> St
         team::add_user_to_team(_join_payload.invited_username.clone(), team_id);
         return Status::Ok;
     }
-    println!("pas admin");
     Status::Forbidden
 }

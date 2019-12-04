@@ -14,6 +14,7 @@ use crate::utils::mongo::connect_mongodb;
 pub mod login;
 pub mod register;
 pub mod token;
+pub mod location;
 
 pub struct User {
     pub username: String,
