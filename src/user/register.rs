@@ -38,7 +38,7 @@ fn add_user_to_db(_user: super::User) -> bool {
 }
 
 #[post("/register", data = "<_user>")]
-pub fn register(_user: super::User) -> Status {
+pub fn register(_user: super::Usper) -> Status {
     if !add_user_to_db(_user) {
         return Status::Conflict;
     }

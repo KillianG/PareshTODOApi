@@ -29,4 +29,6 @@ request. A Token can be acquired from the Login view above.
 * [Get location](doc/get_location.md) : `GET /user/location`
 * [Exist](doc/exist.md) : `GET /user/exist`
 * [Members](doc/members.md) : `GET /team/members/<team_name>`
+* [Profile picture](doc/picture.md) : `POST /user/picture`
+
 
