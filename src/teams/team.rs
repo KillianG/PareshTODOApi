@@ -1,14 +1,12 @@
 use std::io::Read;
 
-use json::Array;
-use rocket::{Data, Outcome, Request};
+use rocket::{Data, Request};
 use rocket::data::{self, FromDataSimple};
 use rocket::http::Status;
 use rocket::outcome::Outcome::{Failure, Success};
-use rocket::request::FromRequest;
 
 use crate::mongodb::db::ThreadedDatabase;
-use crate::user::{get_user_extended, User, UserExtended};
+use crate::user::{get_user_extended, UserExtended};
 use crate::utils::mongo::connect_mongodb;
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -29,7 +27,7 @@ pub fn add_user_to_team(_username: String, _team_id: String) -> () {
             "members": _username.clone()
         }
     };
-    collection.update_one(document, upd, None);
+    collection.update_one(document, upd, None).unwrap();
 }
 
 pub fn add_team_to_db(_team: &super::team::Team, _admin: &super::super::user::User) -> String {
@@ -59,7 +57,7 @@ pub fn add_team_to_user(_team_id: String, _username: String) -> () {
             "teams": _team_id.clone()
         }
     };
-    collection.update_one(document, upd, None);
+    collection.update_one(document, upd, None).unwrap();
 }
 
 pub fn get_team_by_id(_id: String) -> Team {
@@ -159,7 +157,7 @@ pub fn find_team_id(_username: String, _team_name: String) -> String {
 impl FromDataSimple for Team {
     type Error = String;
 
-    fn from_data(request: &Request<'r>, data: Data) -> data::Outcome<Team, String> {
+    fn from_data(_request: &Request<'r>, data: Data) -> data::Outcome<Team, String> {
         let mut string = String::new();
 
         //Read data

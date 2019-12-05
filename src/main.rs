@@ -13,9 +13,8 @@ extern crate rocket;
 extern crate serde_derive;
 
 
-use rocket::http::Method;
 use rocket::Rocket;
-use rocket_cors::{AllowedHeaders, AllowedMethods, AllowedOrigins, Cors, CorsOptions, Error};
+use rocket_cors::Cors;
 
 /* -------------------- MODULES USAGES -------------------- */
 mod user;

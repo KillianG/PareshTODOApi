@@ -1,16 +1,11 @@
-use std::borrow::Borrow;
 use std::io::Read;
 
-use json::Array;
 use rocket::{Data, Outcome, Request};
 use rocket::data::FromDataSimple;
 use rocket::http::Status;
 use rocket::outcome::Outcome::{Failure, Success};
 
-use crate::mongodb::db::ThreadedDatabase;
-use crate::teams::team::{find_team_id, is_admin};
-use crate::user::User;
-use crate::utils::mongo::connect_mongodb;
+use crate::teams::team::find_team_id;
 
 use super::team;
 
@@ -22,7 +17,7 @@ pub struct JoinPayload {
 impl FromDataSimple for JoinPayload {
     type Error = String;
 
-    fn from_data(request: &Request<'r>, data: Data) -> Outcome<Self, (Status, Self::Error), Data> {
+    fn from_data(_request: &Request<'r>, data: Data) -> Outcome<Self, (Status, Self::Error), Data> {
         let mut string = String::new();
 
         //Read data

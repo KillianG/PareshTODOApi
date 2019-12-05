@@ -1,7 +1,6 @@
 use rocket::http::Status;
 use rocket::response::content;
 
-use crate::mongodb::db::ThreadedDatabase;
 use crate::teams::team::{get_members, Team};
 use crate::user::User;
 
@@ -9,7 +8,7 @@ use super::team;
 
 #[get("/my")]
 pub fn my(_user: User) -> content::Json<String> {
-    let mut teams = team::find_user_teams(_user.username);
+    let teams = team::find_user_teams(_user.username);
     let mut team_vec: Vec<Team> = Vec::new();
 
     for team_tmp in teams {

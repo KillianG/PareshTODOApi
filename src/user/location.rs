@@ -25,7 +25,7 @@ pub fn set_location(_country_code: String, _user: User) -> Status {
             "location" => _country_code
         }
     };
-    collection.update_one(document, new_doc, None);
+    collection.update_one(document, new_doc, None).unwrap();
     return Status::Ok;
 }
 
@@ -89,6 +89,6 @@ pub fn picture(_picture: Picture, _user: User) -> Status {
             "picture": _picture.picture.clone()
         }
     };
-    let cursor = collection.update_one(document, new_doc, None);
+    collection.update_one(document, new_doc, None).unwrap();
     Status::Ok
 }

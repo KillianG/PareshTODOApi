@@ -36,8 +36,8 @@ impl<'a, 'r> FromRequest<'a, 'r> for User {
             return Failure((Status::BadRequest, "Missing Authorization in header".to_string()));
         }
         let user = match decode_token(request.headers().get_one("Authorization").unwrap().parse().unwrap()) {
-            Ok(T) => T,
-            Err(e) => return Failure((Status::Forbidden, "User not found".to_string()))
+            Ok(_t) => _t,
+            Err(_e) => return Failure((Status::Forbidden, "User not found".to_string()))
         };
         Success(user)
     }

@@ -1,10 +1,6 @@
 use std::borrow::Borrow;
 
-use json::Array;
 use rocket::http::Status;
-
-use crate::mongodb::db::ThreadedDatabase;
-use crate::utils::mongo::connect_mongodb;
 
 use super::team;
 

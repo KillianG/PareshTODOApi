@@ -1,5 +1,4 @@
 use rocket::http::Status;
-use rocket::response::content;
 
 use crate::mongodb::db::ThreadedDatabase;
 use crate::utils::mongo::connect_mongodb;
@@ -55,7 +54,7 @@ pub fn exist(_username: String, _user: super::User) -> &'static str {
     };
     let cursor = collection.find_one(Some(document), None).unwrap();
     match cursor {
-        Some(T) => return "True",
+        Some(_t) => return "True",
         None => return "False"
     }
 }
