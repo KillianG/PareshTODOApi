@@ -1,7 +1,7 @@
 use rocket::http::Status;
 use rocket::response::content;
 
-use crate::teams::team::{get_members, Team};
+use crate::teams::team::{get_members, is_admin, Team};
 use crate::user::User;
 
 use super::team;
@@ -29,4 +29,19 @@ pub fn members(_team_name: String, _user: User) -> Result<content::Json<String>,
     let members = get_members(team_id.clone());
     let serialized = serde_json::to_string(&members).unwrap();
     return Ok(content::Json(serialized));
+}
+
+#[post("/leave/<_team_name>")]
+pub fn leave(_team_name: String, _user: User) -> Status {
+    let team_id = team::find_team_id(_user.username.clone(), _team_name);
+    let is_member = team::is_member(_user.username.clone(), team_id.clone());
+    if !is_member {
+        return Status::Forbidden;
+    }
+    team::remove_team_from_user(team_id.clone(), _user.username.clone());
+    team::remove_user_from_team(team_id.clone(), _user.username.clone());
+    if is_admin(_user.username.clone(), team_id.clone()) {
+        team::remove_admin(team_id.clone());
+    }
+    return Status::Ok;
 }

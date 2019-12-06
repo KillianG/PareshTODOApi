@@ -30,5 +30,7 @@ request. A Token can be acquired from the Login view above.
 * [Exist](doc/exist.md) : `GET /user/exist`
 * [Members](doc/members.md) : `GET /team/members/<team_name>`
 * [Profile picture](doc/picture.md) : `POST /user/picture`
+* [Leave team](doc/leave.md) : `POST /team/leave/<team_name>`
+
 
 

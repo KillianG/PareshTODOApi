@@ -47,7 +47,6 @@ impl FromDataSimple for JoinPayload {
 pub fn invite(_join_payload: JoinPayload, _user: super::super::user::User) -> Status {
     let team_id = find_team_id(_user.username.clone(), _join_payload.team_name);
     if team::is_admin(_user.username.clone(), team_id.clone()) {
-        println!("admin");
         team::add_team_to_user(team_id.clone(), _join_payload.invited_username.clone());
         team::add_user_to_team(_join_payload.invited_username.clone(), team_id);
         return Status::Ok;

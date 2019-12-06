@@ -60,6 +60,55 @@ pub fn add_team_to_user(_team_id: String, _username: String) -> () {
     collection.update_one(document, upd, None).unwrap();
 }
 
+pub fn remove_user_from_team(_team_id: String, _username: String) -> () {
+    let db: std::sync::Arc<mongodb::db::DatabaseInner> = connect_mongodb();
+    let collection = db.collection("teams");
+
+    let document = doc! {
+            "_id" => mongodb::oid::ObjectId::with_string(_team_id.as_ref()).unwrap(),
+    };
+    let upd = doc! {
+        "$pull": {
+            "members": _username.clone()
+        }
+    };
+    collection.update_one(document, upd, None).unwrap();
+}
+
+pub fn remove_team_from_user(_team_id: String, _username: String) -> () {
+    let db: std::sync::Arc<mongodb::db::DatabaseInner> = connect_mongodb();
+    let collection = db.collection("users");
+
+    let document = doc! {
+            "username" => _username.clone()
+    };
+    let upd = doc! {
+        "$pull": {
+            "teams": _team_id.clone()
+        }
+    };
+    collection.update_one(document, upd, None).unwrap();
+}
+
+pub fn remove_admin(_team_id: String) -> () {
+    let members = get_members(_team_id.clone());
+    let db: std::sync::Arc<mongodb::db::DatabaseInner> = connect_mongodb();
+    let collection = db.collection("teams");
+    let document = doc! {
+            "_id" => mongodb::oid::ObjectId::with_string(_team_id.as_ref()).unwrap()
+    };
+    if members.len() > 0 {
+        let upd = doc! {
+        "$set": {
+            "administrator": members.get(0).unwrap().username.clone()
+            }
+        };
+        collection.update_one(document, upd, None).unwrap();
+    } else {
+        collection.find_one_and_delete(document, None).unwrap();
+    }
+}
+
 pub fn get_team_by_id(_id: String) -> Team {
     let db: std::sync::Arc<mongodb::db::DatabaseInner> = connect_mongodb();
     let collection = db.collection("teams");
