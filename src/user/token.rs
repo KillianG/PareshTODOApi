@@ -28,7 +28,7 @@ pub fn create_token(_username: String) -> String {
 pub fn decode_token(_token: String) -> Result<User, Status> {
     match decode::<Claims>(&_token, "secret_salty_encoded_string".as_ref(), &Validation::default()) {
         Ok(_t) => return Ok(get_user(_t.header.kid.unwrap().to_string())),
-        Err(_e) => return Err(Status::Forbidden),
+        Err(_e) => return Err(Status::Unauthorized),
     };
 }
 
