@@ -210,7 +210,7 @@ impl FromDataSimple for Team {
         let mut string = String::new();
 
         //Read data
-        if let Err(e) = data.open().take(256).read_to_string(&mut string) {
+        if let Err(e) = data.open().take(32768).read_to_string(&mut string) {
             return Failure((Status::InternalServerError, format!("{:?}", e)));
         }
 
