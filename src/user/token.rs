@@ -36,6 +36,7 @@ pub fn change_user_refresh_token(_refresh_token: String) -> (String, String) {
     let db: std::sync::Arc<mongodb::db::DatabaseInner> = connect_mongodb();
     let collection = db.collection("users");
     let _rng = thread_rng();
+    let username = get_username_with_token(_refresh_token.clone());
 
 
     let document = doc! {
@@ -54,8 +55,7 @@ pub fn change_user_refresh_token(_refresh_token: String) -> (String, String) {
     };
     collection.update_one(document, updt, None).unwrap();
 
-    let username = get_username_with_token(_refresh_token);
-    let access_token = create_token(username);
+    let access_token = create_token(username.clone());
     (token_refreshed, access_token)
 }
 

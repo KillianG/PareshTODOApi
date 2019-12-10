@@ -86,15 +86,13 @@ fn get_username_with_token(_token: String) -> String {
     let db: std::sync::Arc<mongodb::db::DatabaseInner> = connect_mongodb();
     let collection = db.collection("users");
 
+    println!("token {}", _token.clone());
+
     let document = doc! {
         "refresh_token" => _token
     };
-    let cursor = collection.find(Some(document), None).unwrap();
-    for result in cursor {
-        let doc = result.expect("Received network error during cursor operations.");
-        return doc.get("username").unwrap().to_string().replace("\"", "");
-    };
-    "Error".to_string()
+    let username = collection.find_one(Some(document), None).unwrap().unwrap().get("username").unwrap().to_string().replace("\"", "");
+    return username;
 }
 
 fn get_user(_username: String) -> User {
