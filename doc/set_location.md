@@ -2,7 +2,7 @@
 
 Set a user location
 
-**URL** : `/user/location/<country_code>`
+**URL** : `/user/time/<time>`
 
 **Method** : `POST`
 

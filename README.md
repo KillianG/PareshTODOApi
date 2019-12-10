@@ -25,8 +25,8 @@ request. A Token can be acquired from the Login view above.
 * [Create team](doc/create_team.md) : `POST /team/create`
 * [Join team](doc/invite_team.md) : `POST /team/invite`
 * [My teams](doc/my_teams.md) : `GET /team/my`
-* [Set location](doc/set_location.md) : `POST /user/location/<country_code>`
-* [Get location](doc/get_location.md) : `GET /user/location`
+* [Set time](doc/set_location.md) : `POST /user/time/<time>`
+* [Set country code](doc/set_country_code.md) : `POST /user/country_code/<country_code>`
 * [Exist](doc/exist.md) : `GET /user/exist`
 * [Members](doc/members.md) : `GET /team/members/<team_name>`
 * [Profile picture](doc/picture.md) : `POST /user/picture`

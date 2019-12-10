@@ -24,8 +24,9 @@ pub struct User {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct UserExtended {
     pub username: String,
-    pub location: String,
+    pub time: String,
     pub picture: String,
+    pub country_code: String
 }
 
 impl<'a, 'r> FromRequest<'a, 'r> for User {
@@ -125,11 +126,12 @@ pub fn get_user_extended(_username: String) -> UserExtended {
         let doc = result.expect("Received network error during cursor operations.");
         return UserExtended {
             username: doc.get("username").unwrap().to_string().replace("\"", ""),
-            location: doc.get("location").unwrap().to_string().replace("\"", ""),
+            time: doc.get("time").unwrap().to_string().replace("\"", ""),
+            country_code: doc.get("country_code").unwrap().to_string().replace("\"", ""),
             picture: doc.get("picture").unwrap().to_string().replace("\"", ""),
         };
     };
-    return UserExtended { username: "".to_string(), location: "".to_string(), picture: "".to_string() }
+    return UserExtended { username: "".to_string(), picture: "".to_string(), time: "".to_string(), country_code: "".to_string() }
 }
 
 fn hash_password(_password: String) -> String {
