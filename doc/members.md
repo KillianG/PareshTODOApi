@@ -18,12 +18,12 @@ Get all member of one of my teams
 [
     {
         "username": "tester_static",
-        "location": "RU",
+        "location": "-120",
         "picture": "no picture"
     },
     {
         "username": "killian",
-        "location": "US",
+        "location": "-60",
         "picture": "no picture"
     }
 ]
