@@ -37,7 +37,7 @@ impl<'a, 'r> FromRequest<'a, 'r> for User {
         }
         let user = match decode_token(request.headers().get_one("Authorization").unwrap().parse().unwrap()) {
             Ok(_t) => _t,
-            Err(_e) => return Failure((Status::Forbidden, "User not found".to_string()))
+            Err(_e) => return Failure((Status::Unauthorized, "User not found".to_string()))
         };
         Success(user)
     }
