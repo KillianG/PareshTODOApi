@@ -16,9 +16,10 @@ pub fn set_time(_time: String, _user: User) -> Status {
     let document = doc! {
         "username" => _user.username
     };
+    let time = _time.parse::<i32>().unwrap();
     let new_doc = doc! {
         "$set" : {
-            "time" => _time
+            "time" => time
         }
     };
     collection.update_one(document, new_doc, None).unwrap();
