@@ -18,13 +18,13 @@ Get all member of one of my teams
 [
     {
         "username": "tester_static",
-        "time": "-120",
+        "time": -120,
         "picture": "new profile picture",
         "country_code": "RU"
     },
     {
             "username": "killian",
-            "time": "-180",
+            "time": -180,
             "picture": "pp",
             "country_code": "US"
         }
