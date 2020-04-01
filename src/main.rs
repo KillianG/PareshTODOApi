@@ -19,7 +19,6 @@ use rocket_cors::Cors;
 /* -------------------- MODULES USAGES -------------------- */
 mod user;
 mod utils;
-mod teams;
 
 fn make_cors() -> Cors {
     let default = rocket_cors::CorsOptions::default();
@@ -30,8 +29,7 @@ fn rocket() -> Rocket {
     rocket::ignite()
         .mount("/", routes![api_root])
         .mount("/user", routes![user::login::login, user::register::register, user::login::refresh_token, user::login::is_logged,
-        user::location::set_time, user::register::exist, user::location::picture, user::location::set_country_code])
-        .mount("/team", routes![teams::create::create, teams::invite::invite, teams::my::my, teams::my::members, teams::my::leave])
+        user::register::exist])
         .attach(make_cors())
 }
 
@@ -41,7 +39,7 @@ fn main() {
 
 #[get("/")]
 fn api_root() -> &'static str {
-    "Welcome to GeoWorker API (tips: you shouldn't be here)"
+    "Welcome to PareshTODO API (tips: you shouldn't be here)"
 }
 
 /* -------------------- UNIT TESTS -------------------- */
@@ -58,6 +56,6 @@ mod test {
         let client = Client::new(rocket()).expect("valid src instance");
         let mut response = client.get("/").dispatch();
         assert_eq!(response.status(), Status::Ok);
-        assert_eq!(response.body_string(), Some("Welcome to GeoWorker API (tips: you shouldn't be here)".into()));
+        assert_eq!(response.body_string(), Some("Welcome to PareshTODO API (tips: you shouldn't be here)".into()));
     }
 }
